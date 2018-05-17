@@ -177,6 +177,8 @@
         rectPageControl = CGRectMake(15, 0, pageCtlWidth, pageCtlHeight);
         rectDescText = CGRectMake(CGRectGetMaxX(rectPageControl)+5, 0, _bottomView.bounds.size.width-CGRectGetMaxX(rectPageControl)-15, _bottomView.bounds.size.height);
         
+        
+        _descTextLabel.text = [_descTextArr firstObject];
         _descTextLabel.textAlignment = NSTextAlignmentRight;
     }
     _thePageControl.frame = rectPageControl;

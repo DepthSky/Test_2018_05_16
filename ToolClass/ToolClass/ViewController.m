@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "CustomScrollView.h"
 
-@interface ViewController ()
+@interface ViewController ()<CustomScrollViewDelegate>
 
 @end
 
@@ -17,9 +17,35 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    [self customScollView];
 }
 
+-(void)customScollView
+{
+    /*
+     
+     
+     */
+    //@[@"0.jpg",@"1.jpg",@"2.jpg"]
+    NSArray * imgArray = @[@"http://a.hiphotos.baidu.com/image/pic/item/10dfa9ec8a136327f216788d9d8fa0ec09fac791.jpg",
+                           @"http://a.hiphotos.baidu.com/image/pic/item/503d269759ee3d6d453aab8b48166d224e4adef5.jpg",
+                           @"http://a.hiphotos.baidu.com/image/pic/item/cf1b9d16fdfaaf519b4aa960875494eef11f7a47.jpg",
+                           @"http://a.hiphotos.baidu.com/image/pic/item/503d269759ee3d6d453aab8b48166d224e4adef5.jpg",
+                           @"http://a.hiphotos.baidu.com/image/pic/item/cf1b9d16fdfaaf519b4aa960875494eef11f7a47.jpg"];
+    CustomScrollView * scrollView = [[CustomScrollView alloc]initWithImageArr:imgArray descTextArr:@[@"zhang_1",@"zhang_2",@"zhang_3",@"zhang_4",@"zhang_5"]];
+    scrollView.frame = CGRectMake(0, 20, self.view.bounds.size.width, 250);
+    scrollView.delegate = self;
+    scrollView.scrollPageControlPositionType = ScrollPageControlPositionTypeLeft;
+    [self.view addSubview:scrollView];
+    
+}
+
+#pragma mark - CustomSscrollViewDelegate
+-(void)scrollViewSelectContentIndex:(NSInteger)index
+{
+    NSLog(@"选中的内容index:%d",(int) index);
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
