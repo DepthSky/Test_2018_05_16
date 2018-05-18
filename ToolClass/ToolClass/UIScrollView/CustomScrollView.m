@@ -165,7 +165,10 @@
         rectPageControl = CGRectMake(_bottomView.bounds.size.width - size.width - 15.0f, 0, pageCtlWidth, pageCtlHeight);
         rectDescText = CGRectMake(15.0f, 0, rectPageControl.origin.x - 20, _bottomView.bounds.size.height);
         
-        _descTextLabel.text = [_descTextArr firstObject];
+        if(_descTextArr.count > 0)
+        {
+            _descTextLabel.text = [_descTextArr firstObject];
+        }
     }
     else if (_scrollPageControlPositionType == ScrollPageControlPositionTypeCenter)
     {
@@ -178,7 +181,10 @@
         rectDescText = CGRectMake(CGRectGetMaxX(rectPageControl)+5, 0, _bottomView.bounds.size.width-CGRectGetMaxX(rectPageControl)-15, _bottomView.bounds.size.height);
         
         
-        _descTextLabel.text = [_descTextArr firstObject];
+        if(_descTextArr.count > 0)
+        {
+            _descTextLabel.text = [_descTextArr firstObject];
+        }
         _descTextLabel.textAlignment = NSTextAlignmentRight;
     }
     _thePageControl.frame = rectPageControl;
@@ -201,7 +207,7 @@
     
     NSString * centerImgName =(NSString *)[_imagesArr objectAtIndex:(_theCurrentPage % _imagesArr.count)];
     [_imgViewCenter sd_setImageWithURL:[NSURL URLWithString:centerImgName] placeholderImage:[UIImage imageNamed:DefaultImage]];
-    if(_scrollPageControlPositionType != ScrollPageControlPositionTypeCenter)
+    if(_scrollPageControlPositionType != ScrollPageControlPositionTypeCenter && _descTextArr.count > 0)
     {
         NSString * centerDescText = (NSString *)[_descTextArr objectAtIndex:_theCurrentPage % _descTextArr.count];
         _descTextLabel.text = centerDescText;
