@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 #import "CustomScrollView.h"
+#import "UIViewExt.h"
+#import "UIColor+Hex.h"
 
 @interface ViewController ()<CustomScrollViewDelegate>
 
@@ -21,6 +23,7 @@
     [self customScollView];
 }
 
+#pragma mark - CustomScrollView
 -(void)customScollView
 {
     /*
@@ -52,6 +55,12 @@
     NSLog(@"选中的内容index:%d",(int) index);
 }
 
+
+-(void)test
+{
+    UIColor * color = [UIColor colorWithHexString:@"ffffff"];
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
