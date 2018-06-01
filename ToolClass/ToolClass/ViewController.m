@@ -11,7 +11,7 @@
 #import "UIViewExt.h"
 #import "UIColor+Hex.h"
 
-@interface ViewController ()<CustomScrollViewDelegate>
+@interface ViewController ()<CustomScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate>
 
 @end
 
@@ -20,14 +20,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self customScollView];
+    [self collectionUI];
+    //[self customScollView];
 }
 
 #pragma mark - CustomScrollView
 -(void)customScollView
 {
     /*
-     
      @"zhang_1",@"zhang_2",@"zhang_3",@"zhang_4",@"zhang_5"
      */
     //@[@"0.jpg",@"1.jpg",@"2.jpg"]
@@ -49,22 +49,50 @@
     
 }
 
-#pragma mark - CustomSscrollViewDelegate
 -(void)scrollViewSelectContentIndex:(NSInteger)index
 {
     NSLog(@"选中的内容index:%d",(int) index);
 }
 
-
--(void)test
+#pragma mark  - UICollectionView
+-(void)collectionUI
 {
-    UIColor * color = [UIColor colorWithHexString:@"ffffff"];
+    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc]init];
+    layout.minimumLineSpacing = 0;
+    layout.minimumInteritemSpacing = 0;
+    layout.itemSize = CGSizeMake(SCREEN_WIDTH/4, SCREEN_WIDTH/4);
     
+    UICollectionView * collectionVew = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:layout];
+    collectionVew.dataSource = self;
+    collectionVew.delegate = self;
+    collectionVew.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:collectionVew];
+    
+    [collectionVew registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"UICollectionViewCellID"];
+}
+-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 5;
+}
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return 10;
+}
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"UICollectionViewCellID" forIndexPath:indexPath];
+    cell.contentView.backgroundColor = randomColor;
+    return cell;
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-
+#pragma mark - Define
+-(void)test
+{
+    UIColor * color = [UIColor colorWithHexString:@"ffffff"];
+    
+}
 @end
