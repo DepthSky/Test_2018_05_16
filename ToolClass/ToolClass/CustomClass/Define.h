@@ -20,24 +20,18 @@
 #define CreateMyCgrect(x,y,w,h)    CGRectMake(x,  y, w, h)
 
 #define NotificationDidPost(postName,postObject) [[NSNotificationCenter defaultCenter] postNotificationName:postName object:postObject]
-
 #define NotiAddObserver(SEL,NotiName)  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(SEL) name:NotiName object:nil];
 
 #define Push(A) [self.navigationController pushViewController:A animated:YES]
 
 #define ALERT(tit,msg) [[[UIAlertView alloc] initWithTitle:tit message:msg delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定",nil] show]
-
 #define AlertShow(tit,msg) [[[UIAlertView alloc] initWithTitle:tit message:msg delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil] show]
 
-//设置透明色
-#define CLEARCOLOR [UIColor clearColor]
+#define CLEARCOLOR [UIColor clearColor] //设置透明色
 
-//加载图片
-#define ImageNamed(name) [UIImage imageNamed:name］
-//#define ImageNamed(_pointer) [UIImage imageNamed:[UIUtil imageName:_pointer］
+#define ImageNamed(name) [UIImage imageNamed:name］//加载图片
 
-//设置View的tag属性
-#define VIEWWITHTAG(_OBJECT, _TAG)    [_OBJECT viewWithTag : _TAG]
+#define VIEWWITHTAG(_OBJECT, _TAG)    [_OBJECT viewWithTag : _TAG] //设置View的tag属性
 
 #pragma mark ===================== 判断 =====================
 //系统判断

@@ -1,6 +1,8 @@
 
 #import "UIImage+LXExtension.h"
 #import <float.h>
+#import <AVFoundation/AVFoundation.h>
+
 @import Accelerate;
 
 @implementation UIImage (LXExtension)
@@ -400,6 +402,203 @@
     UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return outputImage;
+}
+
+
+// UIKit坐标系统原点在左上角，y方向向下的（坐标系A），但在Quartz中坐标系原点在左下角，y方向向上的(坐标系B)。图片绘制也是颠倒的。
+void addRoundedRectToPath(CGContextRef context, CGRect rect, float radius, YKImageRoundedCornerCorner cornerMask)
+{
+    //原点在左下方，y方向向上。移动到线条2的起点。
+    CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + radius);
+    //画出线条2, 目前画线的起始点已经移动到线条2的结束地方了。
+    CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + rect.size.height - radius);
+    //如果左上角需要画圆角，画出一个弧线出来。
+    if (cornerMask & YKImageRoundedCornerCornerTopLeft)
+    {
+        //已左上的正方形的右下脚为圆心，半径为radius， 180度到90度画一个弧线，
+        CGContextAddArc(context, rect.origin.x + radius, rect.origin.y + rect.size.height - radius,
+                        radius, M_PI, M_PI / 2, 1);
+    }
+    else
+    {
+        //如果不需要画左上角的弧度。从线2终点，画到线3的终点，
+        CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + rect.size.height);
+        //线3终点，画到线4的起点
+        CGContextAddLineToPoint(context, rect.origin.x + radius, rect.origin.y + rect.size.height);
+    }
+    //画线4的起始，到线4的终点
+    CGContextAddLineToPoint(context, rect.origin.x + rect.size.width - radius,
+                            rect.origin.y + rect.size.height);
+    //画右上角
+    if (cornerMask & YKImageRoundedCornerCornerTopRight)
+    {
+        CGContextAddArc(context, rect.origin.x + rect.size.width - radius,
+                        rect.origin.y + rect.size.height - radius, radius, M_PI / 2, 0.0f, 1);
+    }
+    else
+    {
+        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height);
+        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height - radius);
+    }
+    CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + radius);
+    //画右下角弧线
+    if (cornerMask & YKImageRoundedCornerCornerBottomRight)
+    {
+        CGContextAddArc(context, rect.origin.x + rect.size.width - radius, rect.origin.y + radius,
+                        radius, 0.0f, -M_PI / 2, 1);
+    }
+    else
+    {
+        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y);
+        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width - radius, rect.origin.y);
+    }
+    CGContextAddLineToPoint(context, rect.origin.x + radius, rect.origin.y);
+    //画左下角弧线
+    if (cornerMask & YKImageRoundedCornerCornerBottomLeft)
+    {
+        CGContextAddArc(context, rect.origin.x + radius, rect.origin.y + radius, radius,
+                        -M_PI / 2, M_PI, 1);
+    }
+    else
+    {
+        CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y);
+        CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + radius);
+    }
+    CGContextClosePath(context);
+}
+
+- (UIImage *)rounded
+{
+    if (!self) return nil;
+    CGFloat radius = MIN(self.size.width, self.size.height) / 2.0;
+    return [self roundedWithRadius:radius];
+}
+
+- (UIImage *)roundedWithRadius:(CGFloat)radius
+{
+    return [self roundedWithRadius:radius cornerMask:YKImageRoundedCornerCornerBottomLeft | YKImageRoundedCornerCornerBottomRight | YKImageRoundedCornerCornerTopLeft | YKImageRoundedCornerCornerTopRight];
+}
+
+- (UIImage *)roundedWithRadius:(CGFloat)radius cornerMask:(YKImageRoundedCornerCorner)cornerMask
+{
+    if (!self) return nil;
+    if (radius <= 0) return self;
+    //UIImage绘制为圆角
+    int w = self.size.width;
+    int h = self.size.height;
+    UIImage *newImage = self;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(NULL, w, h, 8, 4 * w, colorSpace, kCGImageAlphaPremultipliedFirst);
+    CGRect rect = CGRectMake(0, 0, w, h);
+    CGContextBeginPath(context);
+    addRoundedRectToPath(context, rect, radius, cornerMask);
+    CGContextClosePath(context);
+    CGContextClip(context);
+    
+    CGContextDrawImage(context, CGRectMake(0, 0, w, h), newImage.CGImage);
+    CGImageRef imageMasked = CGBitmapContextCreateImage(context);
+    newImage = [UIImage imageWithCGImage:imageMasked];
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    CGImageRelease(imageMasked);
+    
+    return newImage;
+}
+
+//获取视频的一帧图片
++(UIImage *)getVideoFrame:(NSURL *)videoURL
+{
+    NSDictionary *opts = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO]
+                                                     forKey:AVURLAssetPreferPreciseDurationAndTimingKey];
+    AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:videoURL options:opts];                         // 初始化视频媒体文件
+    AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];  // 获取视频独立图片类,并制定媒体文件
+    generator.appliesPreferredTrackTransform = YES;                                                    // 是否旋转图片, 类型取决于拍摄的方式
+    
+    generator.maximumSize = ([UIDevice currentDevice].orientation == UIDeviceOrientationPortrait || [UIDevice currentDevice].orientation == UIDeviceOrientationPortraitUpsideDown) ? CGSizeMake(320, 480) : CGSizeMake(480, 320);    // 制定图片的最大尺寸 默认是0
+    
+    NSError *error = nil;
+    CGImageRef cgImg  = [generator copyCGImageAtTime:CMTimeMake(100, 1) actualTime:NULL error:&error]; // 创建的时间和返回图片的时间,前者是分子和分母的关系,此处表示取10秒那一帧的图片.
+    UIImage *frameImg =  [UIImage imageWithCGImage:cgImg];
+    
+    return frameImg;
+}
+
+//修正图片方向
++ (UIImage *)fixOrientation:(UIImage *)aImage {
+    
+    // No-op if the orientation is already correct
+    if (aImage.imageOrientation ==UIImageOrientationUp)
+        return aImage;
+    
+    // We need to calculate the proper transformation to make the image upright.
+    // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
+    CGAffineTransform transform =CGAffineTransformIdentity;
+    
+    switch (aImage.imageOrientation) {
+        case UIImageOrientationDown:
+        case UIImageOrientationDownMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.width, aImage.size.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+            
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.width,0);
+            transform = CGAffineTransformRotate(transform, M_PI_2);
+            break;
+            
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            transform = CGAffineTransformTranslate(transform, 0, aImage.size.height);
+            transform = CGAffineTransformRotate(transform, -M_PI_2);
+            break;
+        default:
+            break;
+    }
+    
+    switch (aImage.imageOrientation) {
+        case UIImageOrientationUpMirrored:
+        case UIImageOrientationDownMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.width,0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+            
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRightMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.height,0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        default:
+            break;
+    }
+    
+    // Now we draw the underlying CGImage into a new context, applying the transform
+    // calculated above.
+    CGContextRef ctx =CGBitmapContextCreate(NULL, aImage.size.width, aImage.size.height,
+                                            CGImageGetBitsPerComponent(aImage.CGImage),0,
+                                            CGImageGetColorSpace(aImage.CGImage),
+                                            CGImageGetBitmapInfo(aImage.CGImage));
+    CGContextConcatCTM(ctx, transform);
+    switch (aImage.imageOrientation) {
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            // Grr...
+            CGContextDrawImage(ctx,CGRectMake(0,0,aImage.size.height,aImage.size.width), aImage.CGImage);
+            break;
+            
+        default:
+            CGContextDrawImage(ctx,CGRectMake(0,0,aImage.size.width,aImage.size.height), aImage.CGImage);
+            break;
+    }
+    
+    // And now we just create a new UIImage from the drawing context
+    CGImageRef cgimg =CGBitmapContextCreateImage(ctx);
+    UIImage *img = [UIImage imageWithCGImage:cgimg];
+    CGContextRelease(ctx);
+    CGImageRelease(cgimg);
+    return img;
 }
 
 @end
