@@ -1,12 +1,12 @@
 
-#import "NSString+LXExtension.h"
+#import "NSString+Extension.h"
 #import <objc/runtime.h>
 #import <CommonCrypto/CommonDigest.h>
 
 /*CC_MD5_DIGEST_LENGTH*/
 
 #define  MD5_LENGTH   32
-@implementation NSString (LXExtension)
+@implementation NSString (Extension)
 
 + (NSString*)md5HexDigest:(NSString*)input {
     const char* str = [input UTF8String];
@@ -113,6 +113,58 @@
 - (CGFloat)textWidthWithContentHeight:(CGFloat)height font:(UIFont *)font {
     CGSize size = CGSizeMake(MAXFLOAT, height);
     return [self textSizeWithContentSize:size font:font].width;
+}
+
+//获取字符串(或汉字)首字母
++ (NSString *)firstCharacterWithString:(NSString *)string{
+    NSMutableString *str = [NSMutableString stringWithString:string];
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformMandarinLatin, NO);
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformStripDiacritics, NO);
+    NSString *pingyin = [str capitalizedString];
+    return [pingyin substringToIndex:1];
+}
+
+//判断字符串中是否含有空格
++ (BOOL)isHaveSpaceInString:(NSString *)string{
+    NSRange _range = [string rangeOfString:@" "];
+    if (_range.location != NSNotFound) {
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+//判断字符串中是否含有某个字符串
++ (BOOL)isHaveString:(NSString *)string1 InString:(NSString *)string2{
+    NSRange _range = [string2 rangeOfString:string1];
+    if (_range.location != NSNotFound) {
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+//判断字符串中是否含有中文
++ (BOOL)isHaveChineseInString:(NSString *)string{
+    for(NSInteger i = 0; i < [string length]; i++){
+        int a = [string characterAtIndex:i];
+        if (a > 0x4e00 && a < 0x9fff) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+//判断字符串是否全部为数字
++ (BOOL)isAllNum:(NSString *)string{
+    unichar c;
+    for (int i=0; i<string.length; i++) {
+        c=[string characterAtIndex:i];
+        if (!isdigit(c)) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 @end

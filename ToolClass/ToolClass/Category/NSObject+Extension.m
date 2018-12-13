@@ -1,7 +1,7 @@
 
-#import "NSObject+JSON.h"
+#import "NSObject+Extension.h"
 
-@implementation NSObject (JSON)
+@implementation NSObject (Extension)
 
 - (NSString *)JSONString {
     

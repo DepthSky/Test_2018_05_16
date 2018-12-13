@@ -7,12 +7,21 @@
 //
 
 #import "MZUtilsClass.h"
+#import <ifaddrs.h>
+#import <arpa/inet.h>
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 @implementation MZUtilsClass
 
 #define PI 3.1415926
 
 #pragma mark -- 时间
++ (NSString *)currentDateWithFormat:(NSString *)format{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:format];
+    return [dateFormatter stringFromDate:[NSDate date]];
+}
+
 + (NSDate *)dateFromString:(NSString *)datestring formate:(NSString *)formate {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:formate];
@@ -211,6 +220,18 @@
     return nil;
 }
 
++ (NSString *)dicPrettyJsonStringEncoded:(NSDictionary *)dictionary{
+    if ([NSJSONSerialization isValidJSONObject:dictionary ]) {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:NSJSONWritingPrettyPrinted error:&error];
+        if (!error) {
+            NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            return json;
+        }
+    }
+    return nil;
+}
+
 //数组转json
 + (NSString*)arrToJson:(NSArray *)arr{
     
@@ -223,6 +244,19 @@
     return [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];
     
 }
+
++ (NSString *)arrayPrettyJsonStringEncoded:(NSArray *)array{
+    if ([NSJSONSerialization isValidJSONObject:array]) {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:&error];
+        if (!error) {
+            NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            return json;
+        }
+    }
+    return nil;
+}
+
 
 // 字符串 转dic
 +(NSDictionary*)stringToDic:(NSString *)jsonString{
@@ -303,6 +337,58 @@
     return mobileNum;
 }
 
+//将字符串数组按照元素首字母顺序进行排序分组
++ (NSDictionary *)dictionaryOrderByCharacterWithOriginalArray:(NSArray *)array{
+    if (array.count == 0) {
+        return nil;
+    }
+    for (id obj in array) {
+        if (![obj isKindOfClass:[NSString class]]) {
+            return nil;
+        }
+    }
+    UILocalizedIndexedCollation *indexedCollation = [UILocalizedIndexedCollation currentCollation];
+    NSMutableArray *objects = [NSMutableArray arrayWithCapacity:indexedCollation.sectionTitles.count];
+    //创建27个分组数组
+    for (int i = 0; i < indexedCollation.sectionTitles.count; i++) {
+        NSMutableArray *obj = [NSMutableArray array];
+        [objects addObject:obj];
+    }
+    NSMutableArray *keys = [NSMutableArray arrayWithCapacity:objects.count];
+    //按字母顺序进行分组
+    NSInteger lastIndex = -1;
+    for (int i = 0; i < array.count; i++) {
+        NSInteger index = [indexedCollation sectionForObject:array[i] collationStringSelector:@selector(uppercaseString)];
+        [[objects objectAtIndex:index] addObject:array[i]];
+        lastIndex = index;
+    }
+    //去掉空数组
+    for (int i = 0; i < objects.count; i++) {
+        NSMutableArray *obj = objects[i];
+        if (obj.count == 0) {
+            [objects removeObject:obj];
+        }
+    }
+    //获取索引字母
+    for (NSMutableArray *obj in objects) {
+        NSString *str = obj[0];
+        NSString *key = [[self class] firstCharacterWithString:str];
+        [keys addObject:key];
+    }
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    [dic setObject:objects forKey:keys];
+    return dic;
+}
+
+//获取字符串(或汉字)首字母
++ (NSString *)firstCharacterWithString:(NSString *)string{
+    NSMutableString *str = [NSMutableString stringWithString:string];
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformMandarinLatin, NO);
+    CFStringTransform((CFMutableStringRef)str, NULL, kCFStringTransformStripDiacritics, NO);
+    NSString *pingyin = [str capitalizedString];
+    return [pingyin substringToIndex:1];
+}
+
 #pragma mark -- 颜色
 + (UIColor *)transferHEXToRGB:(NSString *)HEX
 {
@@ -376,6 +462,100 @@
     }];
 }
 
+//需要引入头文件:
+//#import <SystemConfiguration/CaptiveNetwork.h>
+//获取 WiFi 信息
+- (NSDictionary *)fetchSSIDInfo {
+    NSArray *ifs = (__bridge_transfer NSArray *)CNCopySupportedInterfaces();
+    if (!ifs) {
+        return nil;
+    }
+    NSDictionary *info = nil;
+    for (NSString *ifnam in ifs) {
+        info = (__bridge_transfer NSDictionary *)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifnam);
+        if (info && [info count]) { break; }
+    }
+    return info;
+}
+
+//需要引入头文件:
+//#import <ifaddrs.h>
+//#import <arpa/inet.h>
+//p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #ff4647}span.s1 {font-variant-ligatures: no-common-ligatures; color: #eb905a}span.s2 {font-variant-ligatures: no-common-ligatures}
+
+//获取广播地址、本机地址、子网掩码、端口信息
+- (NSMutableDictionary *)getLocalInfoForCurrentWiFi {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    // retrieve the current interfaces - returns 0 on success
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        // Loop through linked list of interfaces
+        temp_addr = interfaces;
+        //*/
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                // Check if interface is en0 which is the wifi connection on the iPhone
+                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
+                    //广播地址
+                    NSString *broadcast = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_dstaddr)->sin_addr)];
+                    if (broadcast) {
+                        [dict setObject:broadcast forKey:@"broadcast"];
+                    }
+                    //                    NSLog(@"broadcast address--%@",broadcast);
+                    //本机地址
+                    NSString *localIp = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                    if (localIp) {
+                        [dict setObject:localIp forKey:@"localIp"];
+                    }
+                    //                    NSLog(@"local device ip--%@",localIp);
+                    //子网掩码地址
+                    NSString *netmask = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
+                    if (netmask) {
+                        [dict setObject:netmask forKey:@"netmask"];
+                    }
+                    //                    NSLog(@"netmask--%@",netmask);
+                    //--en0 端口地址
+                    NSString *interface = [NSString stringWithUTF8String:temp_addr->ifa_name];
+                    if (interface) {
+                        [dict setObject:interface forKey:@"interface"];
+                    }
+                    //                    NSLog(@"interface--%@",interface);
+                    return dict;
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    // Free memory
+    freeifaddrs(interfaces);
+    return dict;
+}
+
+//获取设备 IP 地址
++ (NSString *)getIPAddress {
+    NSString *address = @"error";
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
+                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    freeifaddrs(interfaces);
+    return address;
+}
+
 #pragma mark - 正则匹配
 // 邮箱
 + (BOOL)isValidateEmail:(NSString *)email
@@ -393,9 +573,41 @@
     return [pred evaluateWithObject:phone];
 }
 
+//判断手机号码格式是否正确
++ (BOOL)valiMobile:(NSString *)mobile{
+    mobile = [mobile stringByReplacingOccurrencesOfString:@" " withString:@""];
+    if (mobile.length != 11)
+    {
+        return NO;
+    }else{
+        /**
+         * 移动号段正则表达式
+         */
+        NSString *CM_NUM = @"^((13[4-9])|(147)|(15[0-2,7-9])|(178)|(18[2-4,7-8]))\\d{8}|(1705)\\d{7}$";
+        /**
+         * 联通号段正则表达式
+         */
+        NSString *CU_NUM = @"^((13[0-2])|(145)|(15[5-6])|(176)|(18[5,6]))\\d{8}|(1709)\\d{7}$";
+        /**
+         * 电信号段正则表达式
+         */
+        NSString *CT_NUM = @"^((133)|(153)|(177)|(18[0,1,9]))\\d{8}$";
+        NSPredicate *pred1 = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CM_NUM];
+        BOOL isMatch1 = [pred1 evaluateWithObject:mobile];
+        NSPredicate *pred2 = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CU_NUM];
+        BOOL isMatch2 = [pred2 evaluateWithObject:mobile];
+        NSPredicate *pred3 = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CT_NUM];
+        BOOL isMatch3 = [pred3 evaluateWithObject:mobile];
+        
+        if (isMatch1 || isMatch2 || isMatch3) {
+            return YES;
+        }else{
+            return NO;
+        }
+    }
+}
 
-
-
+#pragma mark -- Other
 + (NSString *)matchSearchResultWithContent:(NSString *)content
                                     Search:(NSString *)search
                               resultLength:(NSInteger)length

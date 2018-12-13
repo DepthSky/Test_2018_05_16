@@ -1,7 +1,7 @@
 
-#import "NSDictionary+PropertyCode.h"
+#import "NSDictionary+Extension.h"
 
-@implementation NSDictionary (PropertyCode)
+@implementation NSDictionary (Extension)
 
 // isKindOfClass:判断下是否是当前类或者子类
 // @property (nonatomic ,strong) NSString  *text;

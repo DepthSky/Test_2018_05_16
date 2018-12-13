@@ -6,9 +6,9 @@
 //  Copyright © 2016年 HEYANG. All rights reserved.
 //
 
-#import "UIColor+Hex.h"
+#import "UIColor+Extension.h"
 
-@implementation UIColor (Hex)
+@implementation UIColor (Extension)
 
 + (UIColor *)colorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue{
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];

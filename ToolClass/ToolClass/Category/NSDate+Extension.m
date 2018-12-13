@@ -1,5 +1,5 @@
 
-#import "NSDate+LXExtension.h"
+#import "NSDate+Extension.h"
 
 //haha？
 @implementation LXDateItem
@@ -9,7 +9,7 @@
 }
 @end
 
-@implementation NSDate (LXExtension)
+@implementation NSDate (Extension)
 
 - (LXDateItem *)lx_timeIntervalSinceDate:(NSDate *)anotherDate
 {

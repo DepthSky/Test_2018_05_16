@@ -1,7 +1,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSDictionary (PropertyCode)
+@interface NSDictionary (Extension)
 
 /*
  1.根据字典快速生成Property属性

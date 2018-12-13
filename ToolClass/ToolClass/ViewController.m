@@ -10,8 +10,7 @@
 #import "MRZUICollectionViewController.h"
 #import "MRZUIScrollViewViewcontroller.h"
 
-#import "UIViewExt.h"
-#import "UIColor+Hex.h"
+#import "UIColor+Extension.h"
 
 #import "DSBaseModel.h"
 typedef NS_ENUM(NSUInteger,TestType )

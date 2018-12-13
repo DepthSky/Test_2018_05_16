@@ -84,6 +84,15 @@ typedef void(^CheckVersionInfo)(id result);
  */
 + (BOOL)isValidatePhone:(NSString *)phone;
 
+
+/**
+ 判断手机号
+
+ @param mobile 手机号
+ @return YES 有效 反之无效
+ */
++ (BOOL)valiMobile:(NSString *)mobile;
+
 /**
  *  匹配搜索关键字算法
  */
@@ -151,4 +160,14 @@ typedef void(^CheckVersionInfo)(id result);
                         lastTimeFormat:(NSString *)format1
                          ToCurrentTime:(NSString *)currentTime
                      currentTimeFormat:(NSString *)format2;
+
+
+/**
+ 获取当前时间
+
+ @param format 返回日期格式
+ @return 当前时间
+ */
++ (NSString *)currentDateWithFormat:(NSString *)format;
+
 @end

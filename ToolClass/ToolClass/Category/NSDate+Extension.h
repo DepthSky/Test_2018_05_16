@@ -8,7 +8,7 @@
 @property (nonatomic, assign) NSInteger second;
 @end
 
-@interface NSDate (LXExtension)
+@interface NSDate (Extension)
 /**
  *  两个时间之间的时间间隔
  */

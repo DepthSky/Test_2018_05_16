@@ -1,8 +1,8 @@
 
 
-#import "UITextField+LXExtension.h"
+#import "UITextField+Extension.h"
 
-@implementation UITextField (LXExtension)
+@implementation UITextField (Extension)
 /** 通过这个属性名，就可以修改textField内部的占位文字颜色 */
 static NSString * const LXPlaceholderColorKeyPath = @"placeholderLabel.textColor";
 

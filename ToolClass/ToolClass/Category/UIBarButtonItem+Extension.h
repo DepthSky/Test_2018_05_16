@@ -1,7 +1,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIBarButtonItem (LXExtension)
+@interface UIBarButtonItem (Extension)
 /**
  *  快速自定义导航栏上的按钮
  */

@@ -1,8 +1,8 @@
 
 
-#import "UIBarButtonItem+LXExtension.h"
+#import "UIBarButtonItem+Extension.h"
 
-@implementation UIBarButtonItem (XMGExtension)
+@implementation UIBarButtonItem (Extension)
 + (instancetype)lx_itemWithImage:(NSString *)image highImage:(NSString *)highImage target:(id)target action:(SEL)action
 {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -1,7 +1,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSObject (JSON)
+@interface NSObject (Extension)
 
 /**
  *  字典或对象转成JSON字符串数据

@@ -1,7 +1,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (LXExtension)
+@interface NSString (Extension)
 /**
  *  md5加密
  */
@@ -46,4 +46,21 @@
  *  @return 文本的实际长度
  */
 - (CGFloat)textWidthWithContentHeight:(CGFloat)height font:(UIFont *)font;
+
+
+/**
+ 获取字符串(或汉字)首字母
+
+ @param string 字符
+ @return 首字母
+ */
++ (NSString *)firstCharacterWithString:(NSString *)string;
+
++ (BOOL)isHaveSpaceInString:(NSString *)string;
+    
++ (BOOL)isHaveString:(NSString *)string1 InString:(NSString *)string2;
+    
++ (BOOL)isHaveChineseInString:(NSString *)string;
+
++ (BOOL)isAllNum:(NSString *)string;
 @end
