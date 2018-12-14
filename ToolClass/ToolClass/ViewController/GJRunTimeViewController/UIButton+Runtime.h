@@ -9,5 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface UIButton (Runtime)
+/**
+ 点击时间间隔
+ */
+@property (nonatomic, assign) NSTimeInterval timeInterval;
 
 @end

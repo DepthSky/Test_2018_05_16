@@ -167,4 +167,64 @@
     return YES;
 }
 
+//判断字符串是否为空
++ (BOOL)isBlankString:(NSString *)aStr {
+    if (!aStr)
+    {
+        return YES;
+    }
+    if([aStr isEqual:[NSNull null]])
+    {
+        return YES;
+    }
+    if([aStr isEqual:NULL])
+    {
+        return YES;
+    }
+    if([[aStr class] isSubclassOfClass:[NSNull class]])
+    {
+        return YES;
+    }
+    if ([aStr isKindOfClass:[NSNull class]]) {
+        return YES;
+    }
+    if (!aStr.length) {
+        return YES;
+    }
+    NSCharacterSet *set = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSString *trimmedStr = [aStr stringByTrimmingCharactersInSet:set];
+    if (!trimmedStr.length) {
+        return YES;
+    }
+    if([aStr isEqualToString:@"null"])
+    {
+        return YES;
+    }
+    if([aStr isEqualToString:@"NULL"])
+    {
+        return YES;
+    }
+    if([aStr isEqualToString:@"<null>"])
+    {
+        return YES;
+    }
+    if([aStr isEqualToString:@"(null)"])
+    {
+        return YES;
+    }
+    return NO;
+}
+
+//获取安全的字符串
++ (NSString *)safelyString:(NSString *)string
+{
+    if([[self class] isBlankString:string])
+    {
+        return @"";
+    }
+    else
+    {
+        return string;
+    }
+}
 @end

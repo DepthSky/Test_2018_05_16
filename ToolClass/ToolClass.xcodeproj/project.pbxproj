@@ -49,6 +49,8 @@
 		FFD79A6021184117002D975A /* GJRunTimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD79A5F21184117002D975A /* GJRunTimeViewController.m */; };
 		FFD79A632118415C002D975A /* UIViewController+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD79A622118415C002D975A /* UIViewController+Swizzling.m */; };
 		FFD79A66211841AC002D975A /* NSObject+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD79A65211841AC002D975A /* NSObject+Swizzling.m */; };
+		FFDAA0A321C34C8A00453B8D /* UIButton+LZCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDAA0A221C34C8A00453B8D /* UIButton+LZCategory.m */; };
+		FFDAA0A521C34FE800453B8D /* test3.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDAA0A421C34FE800453B8D /* test3.png */; };
 		FFE574BE21C25F600092ED4B /* CustomPopOverView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE574BC21C25F5F0092ED4B /* CustomPopOverView.m */; };
 		FFE574C121C25FE00092ED4B /* HCSStarRatingView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE574BF21C25FE00092ED4B /* HCSStarRatingView.m */; };
 		FFE574C621C2605B0092ED4B /* BAUISlider.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE574C521C2605A0092ED4B /* BAUISlider.m */; };
@@ -166,6 +168,9 @@
 		FFD79A622118415C002D975A /* UIViewController+Swizzling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Swizzling.m"; sourceTree = "<group>"; };
 		FFD79A64211841AC002D975A /* NSObject+Swizzling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Swizzling.h"; sourceTree = "<group>"; };
 		FFD79A65211841AC002D975A /* NSObject+Swizzling.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Swizzling.m"; sourceTree = "<group>"; };
+		FFDAA0A121C34C8A00453B8D /* UIButton+LZCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+LZCategory.h"; sourceTree = "<group>"; };
+		FFDAA0A221C34C8A00453B8D /* UIButton+LZCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+LZCategory.m"; sourceTree = "<group>"; };
+		FFDAA0A421C34FE800453B8D /* test3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test3.png; sourceTree = "<group>"; };
 		FFE574BC21C25F5F0092ED4B /* CustomPopOverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomPopOverView.m; sourceTree = "<group>"; };
 		FFE574BD21C25F5F0092ED4B /* CustomPopOverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomPopOverView.h; sourceTree = "<group>"; };
 		FFE574BF21C25FE00092ED4B /* HCSStarRatingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCSStarRatingView.m; sourceTree = "<group>"; };
@@ -262,6 +267,7 @@
 			children = (
 				FFE86FD421199DF6008EA0BB /* test2.png */,
 				FFE86FD221199A8D008EA0BB /* test.png */,
+				FFDAA0A421C34FE800453B8D /* test3.png */,
 				FF64C2662109B37700A666DE /* GJDemoListViewController.h */,
 				FF64C2672109B37700A666DE /* GJDemoListViewController.m */,
 				FF64C2692109B4D000A666DE /* GJDemoBaseViewController.h */,
@@ -507,6 +513,8 @@
 		FFEF6B3220F75739004A5E34 /* UIButton */ = {
 			isa = PBXGroup;
 			children = (
+				FFDAA0A121C34C8A00453B8D /* UIButton+LZCategory.h */,
+				FFDAA0A221C34C8A00453B8D /* UIButton+LZCategory.m */,
 				FFEF6B3320F75763004A5E34 /* XLXButton.h */,
 				FFEF6B3420F75763004A5E34 /* XLXButton.m */,
 			);
@@ -627,6 +635,7 @@
 				FFA7450020AD74FD0010E114 /* Main.storyboard in Resources */,
 				FFE86FD521199DF6008EA0BB /* test2.png in Resources */,
 				FF8E37F22101B1B9000DA657 /* player_mini_pause@2x.png in Resources */,
+				FFDAA0A521C34FE800453B8D /* test3.png in Resources */,
 				FFEB4C552106D44600F553CC /* testImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -727,6 +736,7 @@
 				FFE574BE21C25F600092ED4B /* CustomPopOverView.m in Sources */,
 				FFBA3A9020F4956700244C13 /* DSFetchModelProperty.m in Sources */,
 				FF64C26B2109B4D000A666DE /* GJDemoBaseViewController.m in Sources */,
+				FFDAA0A321C34C8A00453B8D /* UIButton+LZCategory.m in Sources */,
 				FFD79A632118415C002D975A /* UIViewController+Swizzling.m in Sources */,
 				FFA744FA20AD74FD0010E114 /* AppDelegate.m in Sources */,
 				FFC4E7BE21BE54BD00F1ED72 /* MZUtilsClass.m in Sources */,

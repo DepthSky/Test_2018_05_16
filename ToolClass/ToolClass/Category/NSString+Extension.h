@@ -63,4 +63,21 @@
 + (BOOL)isHaveChineseInString:(NSString *)string;
 
 + (BOOL)isAllNum:(NSString *)string;
+
+/**
+ 字符串是否为空
+
+ @param aStr 字符串
+ @return YES 空 NO不为空
+ */
++ (BOOL)isBlankString:(NSString *)aStr;
+
+
+/**
+ 获取安全的字符串
+
+ @param string 字符串
+ @return 安全字符串
+ */
++ (NSString *)safelyString:(NSString *)string;
 @end
